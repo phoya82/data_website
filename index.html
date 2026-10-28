@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>5월 25일 호우 대응 보도자료 검색</title>
+  <style>
+    :root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#172033;background:#f4f7fb}body{margin:0}.wrap{max-width:1180px;margin:auto;padding:28px 20px}header{background:#13294b;color:#fff;border-radius:20px;padding:28px;margin-bottom:20px}h1{margin:0 0 8px;font-size:clamp(24px,4vw,40px)}.muted{color:#a9bad4}.controls{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}.controls input{flex:1;min-width:240px;padding:13px 15px;border-radius:10px;border:1px solid #cbd5e1;font-size:16px}.controls button{border:0;border-radius:10px;padding:13px 18px;background:#2f75b5;color:white;font-weight:700;cursor:pointer}.count{font-weight:700;margin:12px 0}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:16px}.card{background:#fff;border:1px solid #e0e7ef;border-radius:16px;padding:20px;box-shadow:0 6px 18px #1c3b5d0d}.tag{display:inline-block;background:#e8f1fb;color:#1b5c93;border-radius:999px;padding:5px 10px;font-size:13px;font-weight:700}.card h2{font-size:19px;margin:12px 0}.card p{line-height:1.65;color:#42526a}.section{background:#fff;border-radius:16px;padding:20px;margin-top:20px;border:1px solid #e0e7ef}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;min-width:620px}th,td{border:1px solid #dbe3ee;padding:10px;text-align:left}th{background:#eef4fb}.warn{color:#b42318;font-weight:700}.empty{padding:25px;background:#fff;border-radius:14px}
+  </style>
+</head>
+<body><main class="wrap">
+  <header><div class="muted">행정안전부 대변인실 · 2026년 5월 25일</div><h1>호우 대응 보도자료 검색</h1><div class="muted">행정안전부 · 기상청 · 경찰청 보도자료의 핵심 사실과 정합성을 한눈에 확인합니다.</div></header>
+  <section class="controls"><input id="q" placeholder="부처명·제목·본문 키워드 입력"><button id="search">검색</button><button id="reset">전체 보기</button></section>
+  <div class="count" id="count">결과 0건</div><section class="cards" id="cards"></section>
+  <section class="section"><h2>부처별 정합성 매트릭스</h2><p>동일 사건의 다섯 사실을 부처별 보도자료 값으로 대조했습니다. 불일치 값은 강조 표시합니다.</p><div class="table-wrap"><table><thead><tr><th>사실</th><th>행정안전부</th><th>기상청</th><th>경찰청</th><th>점검</th></tr></thead><tbody id="matrix"></tbody></table></div></section>
+  <section class="section"><h2>외부 리소스</h2><p>정합성 매트릭스 원본은 Google Sheets에서 관리됩니다.</p><iframe id="sheet" title="Google Sheets 정합성 매트릭스" src="about:blank" style="width:100%;height:360px;border:1px solid #dbe3ee;border-radius:10px"></iframe><p class="muted">배포 후 Google Sheets의 공개 게시용 embed URL을 위 iframe의 src에 연결하세요.</p></section>
+</main><script>
+const data=[
+{번호:'1',부처:'행정안전부',제목:'5월 25일 전국 호우 대응 — 중대본 1단계 가동',본문:'16:30 부로 중대본 1단계를 가동하고 전국 17개 광역지방정부를 대상으로 대응했다. 1,820명이 동원됐고 예산은 23억원, 인명피해는 2명이다.'},
+{번호:'2',부처:'기상청',제목:'5월 25일 전국 호우특보 발효 및 대응 동향',본문:'전국 17개 광역에 호우주의보를 발효했으며 16:40 부로 중대본 가동을 지원했다. 1,820명, 합동 예산 25억원, 인명피해 3명이다.'},
+{번호:'3',부처:'경찰청',제목:'5월 25일 호우 대응 — 교통통제 현황',본문:'16:30 부로 대응 체계를 가동했다. 통제 범위는 16개 광역이며 경찰 1,800명, 예산 23억원, 인명피해 3명이다.'}];
+const rows=[['동원인원','1,820명','1,820명','1,800명','경찰청 수치가 20명 적음'],['투입예산','23억원','25억원','23억원','기상청 합동 예산이 2억원 많음'],['발령시각','16:30','16:40','16:30','기상청만 10분 늦음'],['관할지역수','17개 광역','17개 광역','16개 광역','경찰청 통제 범위가 1개 적음'],['인명피해','2명','3명','3명','행안부와 타 부처 간 1명 차이']];
+function render(list){document.getElementById('count').textContent=`결과 ${list.length}건`;document.getElementById('cards').innerHTML=list.length?list.map(a=>`<article class="card"><span class="tag">${a.부처}</span><h2>${a.제목}</h2><p>${a.본문}</p></article>`).join(''):'<div class="empty">검색 결과가 없습니다.</div>'}
+function search(){const q=document.getElementById('q').value.trim().toLowerCase();render(data.filter(a=>(a.부처+a.제목+a.본문).toLowerCase().includes(q)))}
+document.getElementById('search').onclick=search;document.getElementById('q').oninput=search;document.getElementById('reset').onclick=()=>{document.getElementById('q').value='';render(data)};document.getElementById('matrix').innerHTML=rows.map(r=>`<tr><th>${r[0]}</th><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td class="warn">${r[4]}</td></tr>`).join('');render(data);
+</script></body></html>
